@@ -3,7 +3,7 @@ import time
 from pynput import keyboard
 # Puts the robot in home position
 def move_to_home(mc, speed=60):
-    mc.send_angles([0, 0, 0, 0, 0, 0], speed)
+    mc.send_angles([90, 1, 0, 0, -90, 0], speed)
     mc.set_gripper_value(0, 50)
 
 
@@ -50,19 +50,23 @@ def run_transfer_cycles(mc, point_a, point_b):
 
 # Function to control the robot using keyboard input
 # Uses pynput to listen for key presses and control the robot's joints
-def keyboard_control(mc):
+def keyboard_control(mc, step=3):
     # Configuration
-    step = 2
     speed = 30
     angles = mc.get_angles()
     gripper_open = True
 
     # Move a single joint
     def move_joint(joint_index, delta):
-        angles[joint_index] += delta
-        mc.send_angle(joint_index + 1, angles[joint_index], speed)
-        print(f"Joint {joint_index+1} → {angles[joint_index]:.1f}°")
-        time.sleep(0.1)
+        current_angles = mc.get_angles()  # 🟢 Always get live values
+        if current_angles is None:
+            print("⚠️ Unable to read current angles.")
+            return
+
+        current_angles[joint_index] += delta
+        mc.send_angles(current_angles, 60)
+        print(f"Moved joint {joint_index+1} → {current_angles[joint_index]:.1f}°")
+        print(f"Current coords: {mc.get_coords()}")
 
     # Toggle gripper open/close
     def toggle_gripper():
@@ -97,6 +101,7 @@ def keyboard_control(mc):
             elif key.char == 'x':
                 print("Returning to home position...")
                 move_to_home(mc)
+                return
         except AttributeError:
             if key == keyboard.Key.left:
                 move_joint(0, -step)
@@ -117,3 +122,44 @@ def keyboard_control(mc):
         print("Q/A, W/S, E/D, R/F: Joints 3–6")
         print("O: Toggle gripper | X: Home | ESC: Exit")
         listener.join()
+
+# Function to go to a square grab a piece and put it on another square
+def move_piece(mc, source, dest, square_coords):
+    # Move above source
+    above_source = square_coords[source][:]
+    above_source[2] += 40  # raise z
+    mc.send_coords(above_source, 60, 0)
+    time.sleep(1)
+
+    # Open gripper first
+    mc.set_gripper_value(100, 70)
+    time.sleep(1)
+
+    # Lower to pick
+    mc.send_coords(square_coords[source], 60, 0)
+    time.sleep(1)
+
+    # Close gripper
+    mc.set_gripper_value(0, 70)
+    time.sleep(1)
+
+    # Raise piece
+    mc.send_coords(above_source, 60, 0)
+    time.sleep(1)
+
+    # Move above destination
+    above_dest = square_coords[dest][:]
+    above_dest[2] += 30
+    mc.send_coords(above_dest, 60, 0)
+    time.sleep(1)
+
+    # Lower to place
+    mc.send_coords(square_coords[dest], 60, 0)
+    time.sleep(1)
+
+    # Open gripper
+    mc.set_gripper_value(100, 70)
+    time.sleep(1)
+
+    # Raise arm again
+    mc.send_coords(above_dest, 60, 0)
