@@ -2,7 +2,7 @@
 # Central configuration for the robotic chess player project
 
 # Serial port for the MyCobot
-ROBOT_COM_PORT = "COM8"         # Change to your actual port
+ROBOT_COM_PORT = "COM8"         # It can depend based on your port
 
 # Robot movement speed
 ROBOT_SPEED = 60
