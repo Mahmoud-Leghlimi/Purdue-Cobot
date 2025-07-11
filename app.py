@@ -1,5 +1,7 @@
 import tkinter as ttk
+import tkinter as tk
 from tkinter import messagebox
+from tkinter.ttk import Combobox
 import threading
 
 from config import settings, squares
@@ -9,52 +11,45 @@ from vision.camera_grid import show_camera_with_grid_frame
 
 # 🔌 Global robot connection
 mc = None
-def open_edit_coords_window():
-    edit_win = ttk.Toplevel()
-    edit_win.title("Edit Square Coordinates")
-    edit_win.geometry("400x400")
+def open_edit_coords_window(filepath="config/squares.py"):
+    def save_file():
+        content = text.get("1.0", tk.END)
+        try:
+            with open(filepath, "w") as f:
+                f.write(content)
+            messagebox.showinfo("Success", f"File saved: {filepath}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not save file:\n{e}")
 
-    # Dropdown to select square
-    selected_square = ttk.StringVar(value=list(squares.square_coords.keys())[0])
-    square_menu = ttk.Combobox(
-        edit_win,
-        textvariable=selected_square,
-        values=list(squares.square_coords.keys()),
-        state="readonly"
-    )
-    square_menu.pack(pady=10)
+    # Try to read file content
+    try:
+        with open(filepath, "r") as f:
+            initial_content = f.read()
+    except Exception as e:
+        messagebox.showerror("Error", f"Could not read file:\n{e}")
+        return
 
-    # Entries for coords
-    entries = []
-    labels = ["X", "Y", "Z", "Rx", "Ry", "Rz"]
-    for label in labels:
-        frame = ttk.Frame(edit_win)
-        frame.pack(pady=2)
-        ttk.Label(frame, text=label).pack(side="left")
-        entry = ttk.Entry(frame)
-        entry.pack(side="right")
-        entries.append(entry)
+    # Create new window
+    editor_win = tk.Toplevel()
+    editor_win.title(f"Editing: {filepath}")
+    editor_win.geometry("700x600")
 
-    # Load current coords when square changes
-    def load_coords(*args):
-        coords = squares.square_coords.get(selected_square.get(), [0,0,0,0,0,0])
-        for i, val in enumerate(coords):
-            entries[i].delete(0, ttk.END)
-            entries[i].insert(0, str(val))
+    # Text widget with scrollbar
+    text_frame = tk.Frame(editor_win)
+    text_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-    selected_square.trace_add("write", load_coords)
-    load_coords()
+    scrollbar = tk.Scrollbar(text_frame)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    text = tk.Text(text_frame, wrap=tk.NONE, yscrollcommand=scrollbar.set)
+    text.pack(fill=tk.BOTH, expand=True)
+    scrollbar.config(command=text.yview)
+
+    text.insert(tk.END, initial_content)
 
     # Save button
-    def save_coords():
-        try:
-            new_values = [float(e.get()) for e in entries]
-            squares.square_coords[selected_square.get()] = new_values
-            messagebox.showinfo("Success", f"Updated {selected_square.get()} coordinates.")
-        except ValueError:
-            messagebox.showerror("Error", "Please enter valid numbers.")
-
-    ttk.Button(edit_win, text="Save Changes", command=save_coords).pack(pady=10)
+    save_btn = ttk.Button(editor_win, text="Save Changes", command=save_file)
+    save_btn.pack(pady=5)
 # ---------- LOG FUNCTION ----------
 def play_with_robot():
     messagebox.showinfo(
