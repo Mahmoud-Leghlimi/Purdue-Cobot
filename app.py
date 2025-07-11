@@ -2,14 +2,59 @@ import tkinter as ttk
 from tkinter import messagebox
 import threading
 
-from config import settings
+from config import settings, squares
 from robot import arm_control
 from robot.arm_control import camera_keyboard_control
 from vision.camera_grid import show_camera_with_grid_frame
 
 # 🔌 Global robot connection
 mc = None
+def open_edit_coords_window():
+    edit_win = ttk.Toplevel()
+    edit_win.title("Edit Square Coordinates")
+    edit_win.geometry("400x400")
 
+    # Dropdown to select square
+    selected_square = ttk.StringVar(value=list(squares.square_coords.keys())[0])
+    square_menu = ttk.Combobox(
+        edit_win,
+        textvariable=selected_square,
+        values=list(squares.square_coords.keys()),
+        state="readonly"
+    )
+    square_menu.pack(pady=10)
+
+    # Entries for coords
+    entries = []
+    labels = ["X", "Y", "Z", "Rx", "Ry", "Rz"]
+    for label in labels:
+        frame = ttk.Frame(edit_win)
+        frame.pack(pady=2)
+        ttk.Label(frame, text=label).pack(side="left")
+        entry = ttk.Entry(frame)
+        entry.pack(side="right")
+        entries.append(entry)
+
+    # Load current coords when square changes
+    def load_coords(*args):
+        coords = squares.square_coords.get(selected_square.get(), [0,0,0,0,0,0])
+        for i, val in enumerate(coords):
+            entries[i].delete(0, ttk.END)
+            entries[i].insert(0, str(val))
+
+    selected_square.trace_add("write", load_coords)
+    load_coords()
+
+    # Save button
+    def save_coords():
+        try:
+            new_values = [float(e.get()) for e in entries]
+            squares.square_coords[selected_square.get()] = new_values
+            messagebox.showinfo("Success", f"Updated {selected_square.get()} coordinates.")
+        except ValueError:
+            messagebox.showerror("Error", "Please enter valid numbers.")
+
+    ttk.Button(edit_win, text="Save Changes", command=save_coords).pack(pady=10)
 # ---------- LOG FUNCTION ----------
 def play_with_robot():
     messagebox.showinfo(
@@ -43,6 +88,17 @@ def launch_camera_control():
 
 # ---------- SECOND WINDOW ----------
 def keyboard_control_window():
+    print("🔌 Connecting to MyCobot...")
+    mc = arm_control.connect_robot()
+
+    if mc:
+        print("✅ Successfully connected to MyCobot!")
+    else:
+        print("❌ Failed to connect to MyCobot!")
+        messagebox.showerror(
+            "Connection Error",
+            "❌ Could not connect to MyCobot. Check your COM port!"
+        )
     control_win = ttk.Tk()
     control_win.title("Keyboard Control")
     control_win.geometry("800x500")
@@ -129,19 +185,16 @@ def main_window():
         command=play_against_robot
     ).pack(pady=10)
 
+    ttk.Button(
+    root,
+    text="Edit Square Coordinates",
+    font=("Helvetica", 12),
+    width=20,
+    command=open_edit_coords_window
+    ).pack(pady=10)
+
     root.mainloop()
 
 # ---------- PROGRAM START ----------
 if __name__ == "__main__":
-    print("🔌 Connecting to MyCobot...")
-    mc = arm_control.connect_robot()
-
-    if mc:
-        print("✅ Successfully connected to MyCobot!")
-        main_window()
-    else:
-        print("❌ Failed to connect to MyCobot!")
-        messagebox.showerror(
-            "Connection Error",
-            "❌ Could not connect to MyCobot. Check your COM port!"
-        )
+    main_window()
