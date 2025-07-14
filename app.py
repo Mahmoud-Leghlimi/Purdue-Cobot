@@ -11,6 +11,7 @@ from vision.camera_grid import show_camera_with_grid_frame
 
 # 🔌 Global robot connection
 mc = None
+# 🔌 Coords display
 def open_edit_coords_window(filepath="config/squares.py"):
     def save_file():
         content = text.get("1.0", tk.END)
@@ -83,17 +84,6 @@ def launch_camera_control():
 
 # ---------- SECOND WINDOW ----------
 def keyboard_control_window():
-    print("🔌 Connecting to MyCobot...")
-    mc = arm_control.connect_robot()
-
-    if mc:
-        print("✅ Successfully connected to MyCobot!")
-    else:
-        print("❌ Failed to connect to MyCobot!")
-        messagebox.showerror(
-            "Connection Error",
-            "❌ Could not connect to MyCobot. Check your COM port!"
-        )
     control_win = ttk.Tk()
     control_win.title("Keyboard Control")
     control_win.geometry("800x500")
@@ -192,4 +182,15 @@ def main_window():
 
 # ---------- PROGRAM START ----------
 if __name__ == "__main__":
-    main_window()
+    print("🔌 Connecting to MyCobot...")
+    mc = arm_control.connect_robot()
+
+    if mc:
+        print("✅ Successfully connected to MyCobot!")
+        main_window()
+    else:
+        print("❌ Failed to connect to MyCobot!")
+        messagebox.showerror(
+            "Connection Error",
+            "❌ Could not connect to MyCobot. Check your COM port!"
+        )
