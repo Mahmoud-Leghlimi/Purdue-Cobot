@@ -8,7 +8,7 @@ ROBOT_COM_PORT = "COM8"         # It can depend based on your port
 ROBOT_SPEED = 60
 
 # Step size for joint control (degrees)
-JOINT_STEP = 5
+JOINT_STEP = 4
 
 # Camera index for OpenCV
 CAMERA_INDEX = 0                # Usually 0 or 1, test your webcam

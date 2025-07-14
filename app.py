@@ -8,6 +8,7 @@ from config import settings, squares
 from robot import arm_control
 from robot.arm_control import camera_keyboard_control
 from vision.camera_grid import show_camera_with_grid_frame
+from robot.play_with_robot import play_with_robot_click
 
 # 🔌 Global robot connection
 mc = None
@@ -53,10 +54,7 @@ def open_edit_coords_window(filepath="config/squares.py"):
     save_btn.pack(pady=5)
 # ---------- LOG FUNCTION ----------
 def play_with_robot():
-    messagebox.showinfo(
-        "Coming Soon",
-        "🤖 'Play with the Robot' functionality will be added here!"
-    )
+     play_with_robot_click(mc)
 
 def play_against_robot():
     messagebox.showinfo(
