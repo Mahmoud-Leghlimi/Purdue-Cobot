@@ -43,7 +43,7 @@ def keyboard_control(mc, step=3):
     def toggle_gripper():
         nonlocal gripper_open
         gripper_open = not gripper_open
-        mc.set_gripper_value(100 if gripper_open else 0, 70)
+        mc.set_gripper_value(20 if gripper_open else 0, 70)
         print("Gripper opened." if gripper_open else "Gripper closed.")
         time.sleep(0.1)
 
@@ -95,7 +95,7 @@ def keyboard_control(mc, step=3):
         listener.join()
 
 def move_joint(mc, joint_index, delta):
-    current_angles = mc.get_angles()
+    current_angles = mc.get_angles()  # 🟢 Always get live values
     if current_angles is None:
         print("⚠️ Unable to read angles.")
         return
@@ -109,7 +109,7 @@ def move_joint(mc, joint_index, delta):
 gripper_open = [False] 
 def toggle_gripper(mc):
     gripper_open[0] = not gripper_open[0]
-    mc.set_gripper_value(100 if gripper_open[0] else 0, 70)
+    mc.set_gripper_value(20 if gripper_open[0] else 0, 70)
     print("✅ Gripper opened" if gripper_open[0] else "✅ Gripper closed")
 
 def camera_keyboard_control(mc, move_joint, toggle_gripper, move_to_home, settings, show_camera_with_grid_frame):
@@ -177,6 +177,7 @@ def camera_keyboard_control(mc, move_joint, toggle_gripper, move_to_home, settin
             coords = mc.get_coords()
             if coords:
                 print(f"📍 Current coords: {coords}")
+                print("current angles:", mc.get_angles())
             else:
                 print("⚠️ Unable to read coords.")
         elif key == 27:  # ESC
