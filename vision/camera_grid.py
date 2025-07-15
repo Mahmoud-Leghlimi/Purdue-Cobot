@@ -1,9 +1,6 @@
 import cv2
 from config import settings
 
-import cv2
-from config import settings
-
 def show_camera_with_grid_frame(frame):
     """
     Takes a camera frame, overlays an 8x8 grid with labels (a1–h8),

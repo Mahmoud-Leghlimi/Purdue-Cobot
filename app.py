@@ -54,7 +54,7 @@ def open_edit_coords_window(filepath="config/squares.py"):
     save_btn.pack(pady=5)
 # ---------- LOG FUNCTION ----------
 def play_with_robot():
-     play_with_robot_click(mc)
+     play_with_robot_click(mc, tk)
 
 def play_against_robot():
     messagebox.showinfo(

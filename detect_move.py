@@ -1,14 +1,14 @@
 import cv2
 import time
 from pymycobot import MyCobot320
-from config.squares import square_coords
+from config.squares import square_angles
 
 # --- Robot Setup ---
 mc = MyCobot320("COM8", 115200)
 
-def move_robot_to(coords):
-    print(f"🤖 Moving to {coords}")
-    mc.send_coords(coords, 60, 0)
+def move_robot_to(angles):
+    print(f"🤖 Moving to {angles}")
+    mc.send_angles(angles, 60, 0)
     time.sleep(2)
 
 # --- Define chessboard region in camera view (adjust to your camera!) ---
@@ -32,8 +32,8 @@ def on_mouse(event, x, y, flags, param):
             square = chr(ord('a') + col) + str(8 - row)
             print(f"🖱️ Clicked on: {square}")
 
-            if square in square_coords:
-                move_robot_to(square_coords[square])
+            if square in square_angles:
+                move_robot_to(square_angles[square])
             else:
                 print("❌ Square not in map.")
 

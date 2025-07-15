@@ -43,7 +43,7 @@ def keyboard_control(mc, step=3):
     def toggle_gripper():
         nonlocal gripper_open
         gripper_open = not gripper_open
-        mc.set_gripper_value(20 if gripper_open else 0, 70)
+        mc.set_gripper_value(100 if gripper_open else 0, 70)
         print("Gripper opened." if gripper_open else "Gripper closed.")
         time.sleep(0.1)
 
@@ -109,7 +109,7 @@ def move_joint(mc, joint_index, delta):
 gripper_open = [False] 
 def toggle_gripper(mc):
     gripper_open[0] = not gripper_open[0]
-    mc.set_gripper_value(20 if gripper_open[0] else 0, 70)
+    mc.set_gripper_value(15 if gripper_open[0] else 0, 70)
     print("✅ Gripper opened" if gripper_open[0] else "✅ Gripper closed")
 
 def camera_keyboard_control(mc, move_joint, toggle_gripper, move_to_home, settings, show_camera_with_grid_frame):
@@ -136,7 +136,6 @@ def camera_keyboard_control(mc, move_joint, toggle_gripper, move_to_home, settin
 
         # Resize and overlay grid
         frame = cv2.resize(frame, (settings.WINDOW_WIDTH, settings.WINDOW_HEIGHT))
-        frame = show_camera_with_grid_frame(frame)
         cv2.imshow("Robot Control", frame)
 
         # Handle keyboard input
