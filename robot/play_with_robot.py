@@ -3,6 +3,7 @@ import time
 from pymycobot import MyCobot320
 from config.squares import square_angles
 from functions import move_to_home
+from config import settings
 
 def play_with_robot_click(mc, tk):
     """
@@ -14,22 +15,33 @@ def play_with_robot_click(mc, tk):
     """
 
     # --- ROI Settings ---
-    ROI_TOP = 100
-    ROI_BOTTOM = 500
-    ROI_LEFT = 100
-    ROI_RIGHT = 500
-    ROI_WIDTH = ROI_RIGHT - ROI_LEFT
-    ROI_HEIGHT = ROI_BOTTOM - ROI_TOP
+    square_size = settings.SQUARE_SIZE
+    grid_w = square_size * settings.GRID_COLS
+    grid_h = square_size * settings.GRID_ROWS
+    win_w = settings.WINDOW_WIDTH
+    win_h = settings.WINDOW_HEIGHT
+
+    ROI_LEFT = (win_w - grid_w) // 2
+    ROI_TOP = (win_h - grid_h) // 2
+    ROI_RIGHT = ROI_LEFT + grid_w
+    ROI_BOTTOM = ROI_TOP + grid_h
+    ROI_WIDTH = grid_w
+    ROI_HEIGHT = grid_h
 
     clicks = []
 
     # --- Robot Movement Helpers ---
-    def move_robot_to(angles):
+    def move_robot_to(square, angles):
         print(f"🤖 Moving to joint angles: {angles}")
         mc.send_angles(angles, 40)
-        time.sleep(2)
 
-    def pick_piece(angles):
+        # Conditional wait time
+        if '1' in square or '2' in square:
+            time.sleep(7)
+        else:
+            time.sleep(2)
+
+    def pick_piece(square, angles):
         print("🔄 Returning to home before pick...")
         move_to_home(mc)
         time.sleep(1)
@@ -37,23 +49,23 @@ def play_with_robot_click(mc, tk):
         time.sleep(1)
 
         print(f"🤖 Moving to pick: {angles}")
-        move_robot_to(angles)
+        move_robot_to(square, angles)
 
         mc.set_gripper_value(0, 50)  # close gripper
-        time.sleep(1)
+        time.sleep(3)
         move_to_home(mc)
         print("✅ Piece picked and returned home.")
 
-    def place_piece(angles):
+    def place_piece(square, angles):
         print("🔄 Returning to home before place...")
         move_to_home(mc)
-        time.sleep(1)
+        time.sleep(3)
 
         print(f"🤖 Moving to place: {angles}")
-        move_robot_to(angles)
+        move_robot_to(square, angles)
 
         mc.set_gripper_value(15, 50)  # open gripper to release
-        time.sleep(1)
+        time.sleep(3)
         move_to_home(mc)
         print("✅ Piece placed and returned home.")
 
@@ -99,8 +111,8 @@ def play_with_robot_click(mc, tk):
                         print(f"\n🟢 Selected Move: {clicks[0]} ➜ {clicks[1]}")
                         if confirm_move(clicks[0], clicks[1]):
                             print("✅ Move confirmed!")
-                            pick_piece(square_angles[clicks[0]])
-                            place_piece(square_angles[clicks[1]])
+                            pick_piece(square, square_angles[clicks[0]])
+                            place_piece(square, square_angles[clicks[1]])
                         else:
                             print("❌ Move canceled.")
 
@@ -116,6 +128,7 @@ def play_with_robot_click(mc, tk):
     # --- Main Loop ---
     while True:
         ret, frame = cap.read()
+        frame = cv2.resize(frame, (win_w, win_h))
         if not ret:
             print("❌ Camera read failed.")
             break

@@ -18,6 +18,7 @@ WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 640
 GRID_ROWS = 8
 GRID_COLS = 8
+SQUARE_SIZE = 60  # Size of each square in pixels
 
 # Gripper open/close values
 GRIPPER_OPEN_VALUE = 100
