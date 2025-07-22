@@ -39,33 +39,34 @@ def play_with_robot_click(mc, tk):
         if '1' in square or '2' in square:
             time.sleep(7)
         else:
-            time.sleep(2)
+            time.sleep(4)
 
-    def pick_piece(square, angles):
+    def pick_and_place_piece(source_square, source_angles, dest_square, dest_angles):
         print("🔄 Returning to home before pick...")
         move_to_home(mc)
         time.sleep(1)
-        mc.set_gripper_value(15, 50)  # open gripper
-        time.sleep(1)
 
-        print(f"🤖 Moving to pick: {angles}")
-        move_robot_to(square, angles)
+        mc.set_gripper_value(15, 50)  # open gripper
+        time.sleep(4)
+
+        print(f"🤖 Moving to pick: {source_angles}")
+        move_robot_to(source_square, source_angles)
 
         mc.set_gripper_value(0, 50)  # close gripper
-        time.sleep(3)
+        time.sleep(4)
+
         move_to_home(mc)
         print("✅ Piece picked and returned home.")
 
-    def place_piece(square, angles):
         print("🔄 Returning to home before place...")
-        move_to_home(mc)
-        time.sleep(3)
+        time.sleep(1)
 
-        print(f"🤖 Moving to place: {angles}")
-        move_robot_to(square, angles)
+        print(f"🤖 Moving to place: {dest_angles}")
+        move_robot_to(dest_square, dest_angles)
 
         mc.set_gripper_value(15, 50)  # open gripper to release
         time.sleep(3)
+
         move_to_home(mc)
         print("✅ Piece placed and returned home.")
 
@@ -111,8 +112,12 @@ def play_with_robot_click(mc, tk):
                         print(f"\n🟢 Selected Move: {clicks[0]} ➜ {clicks[1]}")
                         if confirm_move(clicks[0], clicks[1]):
                             print("✅ Move confirmed!")
-                            pick_piece(square, square_angles[clicks[0]])
-                            place_piece(square, square_angles[clicks[1]])
+                            pick_and_place_piece(
+                                clicks[0],
+                                square_angles[clicks[0]],
+                                clicks[1],
+                                square_angles[clicks[1]]
+                            )
                         else:
                             print("❌ Move canceled.")
 

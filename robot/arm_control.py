@@ -37,7 +37,6 @@ def keyboard_control(mc, step=3):
         current_angles[joint_index] += delta
         mc.send_angles(current_angles, 60)
         print(f"Moved joint {joint_index+1} → {current_angles[joint_index]:.1f}°")
-        print(f"Current coords: {mc.get_coords()}")
 
     # Toggle gripper open/close
     def toggle_gripper():
@@ -93,6 +92,10 @@ def keyboard_control(mc, step=3):
         print("Q/A, W/S, E/D, R/F: Joints 3–6")
         print("O: Toggle gripper | X: Home | ESC: Exit")
         listener.join()
+def move_robot_to(mc, square, angles, speed=50):
+    print(f"Moving to {square} with angles {angles}")
+    mc.send_angles(angles, speed)
+    time.sleep(2)
 
 def move_joint(mc, joint_index, delta):
     current_angles = mc.get_angles()  # 🟢 Always get live values
@@ -102,9 +105,6 @@ def move_joint(mc, joint_index, delta):
     current_angles[joint_index] += delta
     mc.send_angles(current_angles, 60)
     print(f"✅ Moved joint {joint_index+1} → {current_angles[joint_index]:.1f}°")
-    coords = mc.get_coords()
-    if coords:
-        print(f"📍 Current coords: {coords}")
 
 gripper_open = [False] 
 def toggle_gripper(mc):
@@ -185,3 +185,41 @@ def camera_keyboard_control(mc, move_joint, toggle_gripper, move_to_home, settin
 
     cap.release()
     cv2.destroyAllWindows()
+
+def pick_and_place_piece(mc, from_square, from_angles, to_square, to_angles):
+    # Step 1: Go Home
+    print("🔄 Returning to home before pick...")
+    move_to_home(mc)
+    time.sleep(1)
+
+    # Step 2: Open Gripper
+    mc.set_gripper_value(15, 50)  # open gripper
+    time.sleep(4)
+
+    # Step 3: Move to Pick Location
+    print(f"🤖 Moving to pick: {from_angles}")
+    move_robot_to(mc, from_square, from_angles)
+
+    # Step 4: Close Gripper (Pick)
+    mc.set_gripper_value(0, 50)  # close gripper
+    time.sleep(4)
+
+    # Step 5: Return Home
+    move_to_home(mc)
+    print("✅ Piece picked and returned home.")
+
+    # Step 6: Go Home Before Place
+    print("🔄 Returning to home before place...")
+    time.sleep(1)
+
+    # Step 7: Move to Place Location
+    print(f"🤖 Moving to place: {to_angles}")
+    move_robot_to(mc, to_square, to_angles)
+
+    # Step 8: Open Gripper (Place)
+    mc.set_gripper_value(15, 50)  # release gripper
+    time.sleep(3)
+
+    # Step 9: Return Home
+    move_to_home(mc)
+    print("✅ Piece placed and returned home.")
