@@ -1,3 +1,4 @@
 opencv-python
-python-chess
+pynput
 pymycobot
+python-chess
