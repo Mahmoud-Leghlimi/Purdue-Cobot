@@ -9,6 +9,7 @@ from robot import arm_control
 from robot.arm_control import camera_keyboard_control
 from vision.camera_grid import show_camera_with_grid_frame
 from robot.play_with_robot import play_with_robot_click
+from game.play_against import play_against_robot_chess
 
 # 🔌 Global robot connection
 mc = None
@@ -57,10 +58,7 @@ def play_with_robot():
      play_with_robot_click(mc, tk)
 
 def play_against_robot():
-    messagebox.showinfo(
-        "Coming Soon",
-        "🤖 'Play Against the Robot' functionality will be added here!"
-    )
+    play_against_robot_chess(mc)
 def log(message):
     if log_display:
         log_display.insert(ttk.END, message + "\n")
@@ -124,6 +122,13 @@ def keyboard_control_window():
         command=launch_camera_control
     ).pack(pady=15)
 
+    ttk.Button(
+        control_win,
+        text="Exit",
+        font=("Helvetica", 12),
+        command=control_win.destroy
+    ).pack(pady=10)
+
     global log_display
     log_display = ttk.Text(control_win, height=10, width=60)
     log_display.pack(padx=10, pady=10)
@@ -174,6 +179,14 @@ def main_window():
     font=("Helvetica", 12),
     width=20,
     command=open_edit_coords_window
+    ).pack(pady=10)
+
+    ttk.Button(
+    root,
+    text="Exit",
+    font=("Helvetica", 12),
+    width=20,
+    command=root.quit
     ).pack(pady=10)
 
     root.mainloop()
