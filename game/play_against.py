@@ -4,6 +4,27 @@ from config.squares import square_angles
 from robot.arm_control import pick_and_place_piece
 
 STOCKFISH_PATH = r"C:\Users\leghlimia\Purdue Cobot\Purdue-Cobot\.venv\Lib\site-packages\stockfish\stockfish-windows-x86-64-avx2.exe"
+def difficulty(tk, mc):
+    def on_select_difficulty(level):
+        skill_levels = {
+            "Easy": 1,
+            "Medium": 10,
+            "Hard": 20
+        }
+        skill = skill_levels[level]
+        window.destroy()
+        play_against_robot_chess(mc, skill_level=skill)
+
+    window = tk.Tk()
+    window.title("Choose Chess Difficulty")
+    window.geometry("300x200")
+
+    tk.Label(window, text="Select Difficulty:", font=("Arial", 14)).pack(pady=10)
+
+    for level in ["Easy", "Medium", "Hard"]:
+        tk.Button(window, text=level, width=20, command=lambda l=level: on_select_difficulty(l)).pack(pady=5)
+
+    window.mainloop()
 
 # Flip a square name as if rotating the board 180 degrees
 # E.g., a1 -> h8, b2 -> g7, etc.
@@ -26,9 +47,11 @@ def rename_squares_for_black(square_angles):
 
     return renamed
 
-def play_against_robot_chess(mc, robot_color='black'):
+def play_against_robot_chess(mc, robot_color='black', skill_level=10):
     board = chess.Board()
     engine = chess.engine.SimpleEngine.popen_uci(STOCKFISH_PATH)
+
+    engine.configure({"Skill Level": skill_level})
 
     if robot_color.lower() == "black":
         angle_map = rename_squares_for_black(square_angles)

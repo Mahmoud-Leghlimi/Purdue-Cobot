@@ -9,7 +9,7 @@ from robot import arm_control
 from robot.arm_control import camera_keyboard_control
 from vision.camera_grid import show_camera_with_grid_frame
 from robot.play_with_robot import play_with_robot_click
-from game.play_against import play_against_robot_chess
+from game.play_against import difficulty
 
 # 🔌 Global robot connection
 mc = None
@@ -58,7 +58,7 @@ def play_with_robot():
      play_with_robot_click(mc, tk)
 
 def play_against_robot():
-    play_against_robot_chess(mc)
+    difficulty(tk, mc)
 def log(message):
     if log_display:
         log_display.insert(ttk.END, message + "\n")
