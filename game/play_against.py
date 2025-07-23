@@ -5,9 +5,35 @@ from robot.arm_control import pick_and_place_piece
 
 STOCKFISH_PATH = r"C:\Users\leghlimia\Purdue Cobot\Purdue-Cobot\.venv\Lib\site-packages\stockfish\stockfish-windows-x86-64-avx2.exe"
 
-def play_against_robot_chess(mc):
+# Flip a square name as if rotating the board 180 degrees
+# E.g., a1 -> h8, b2 -> g7, etc.
+def rename_squares_for_black(square_angles):
+    """
+    Re-map square names assuming the robot is physically using a1-h2,
+    but logically playing as Black (so a1 becomes h8, a2 becomes h7, etc.).
+    """
+    renamed = {}
+    for square, angles in square_angles.items():
+        file = square[0]
+        rank = square[1]
+
+        # Flip both file and rank
+        flipped_file = chr(ord('h') - (ord(file) - ord('a')))
+        flipped_rank = str(9 - int(rank))
+
+        new_name = flipped_file + flipped_rank
+        renamed[new_name] = angles
+
+    return renamed
+
+def play_against_robot_chess(mc, robot_color='black'):
     board = chess.Board()
     engine = chess.engine.SimpleEngine.popen_uci(STOCKFISH_PATH)
+
+    if robot_color.lower() == "black":
+        angle_map = rename_squares_for_black(square_angles)
+    else:
+        angle_map = square_angles
 
     while not board.is_game_over():
         print("\nCurrent board:\n", board)
@@ -34,8 +60,8 @@ def play_against_robot_chess(mc):
         print("Stockfish plays:", move)
 
         # Get angles from your config
-        from_angles = square_angles[from_square]
-        to_angles = square_angles[to_square]
+        from_angles = angle_map[from_square]
+        to_angles = angle_map[to_square]
 
         # Move the piece with the robot
         pick_and_place_piece(mc, from_square, from_angles, to_square, to_angles)
