@@ -1,172 +1,123 @@
-Purdue-Cobot/  
-│  
-├── app.py  
-├── detect_move.py  
-├── functions.py  
-├── requirements.txt  
-├── README.md  
-│  
-├── config/  
-│   ├── settings.py  
-│   └── squares.py  
-│  
-├── robot/  
-│   ├── arm_control.py  
-│   └── __init__.py  
+# 🤖 Robotic Chess Player using MyCobot 320
+
+**Author:** Mahmoud Leghlimi  
+**Email:** mahmoudboston99@gmail.com , leghlimia@berea.edu  
+**LinkedIn:** [LinkedIn Mahmoud](https://www.linkedin.com/in/mahmoud-leghlimi-58aa19176/)  
+**Internship:** Bechtel Center, Purdue School of Engineering (Summer 2025)  
+
+---
+
+## 📝 Description
+
+This project integrates computer vision, motion planning, and robot control to create a robotic arm that can play physical chess using the [MyCobot 320](https://www.elephantrobotics.com/mycobot320/). The user can either manually operate the robot using a keyboard interface or play against an AI opponent powered by Stockfish.
+
+The project is intended to explore affordable and accessible robotics platforms for vision-guided automation, particularly in resource-constrained environments.
+
+---
+
+## 🎮 Features
+
+- Interactive UI with Tkinter for selecting between control modes
+- Two modes:  
+  - **Play With Robot**: Use your hand to move pieces, then click source/destination to let the robot mirror the move  
+  - **Play Against Robot**: Play chess against Stockfish; the robot physically plays its moves
+- Custom camera overlay with grid-based square detection using OpenCV
+- Hand-calibrated joint angles mapped to chessboard coordinates
+- Manual keyboard control for direct joint and gripper movement
+- Safety-handling for gripper behavior and rotation limits
+
+---
+
+## 🧠 Technologies Used
+
+- Python
+- OpenCV (vision/grid overlay)
+- `pymycobot` (robot control)
+- `python-chess` (game engine)
+- Stockfish (AI opponent)
+- Tkinter (GUI)
+
+---
+
+## 📂 Folder Structure
+
+```
+Purdue-Cobot/
 │
-└── vision/  
-    ├── camera_grid.py  
-    └── __init__.py  
-📜 Description of Folders and Files  
-✅ Top-level files  
-# app.py  
-Main GUI launcher using Tkinter. Lets user choose control modes like keyboard control, playing with the robot, or editing square coordinates.
+├── app.py                      # Main GUI launcher
+├── robot/
+│   ├── play_with_robot.py      # Click-to-move interaction
+│   ├── arm_control.py          # Low-level arm control helpers
+│   └── camera_keyboard_control.py # Manual control with key presses
+│
+├── config/
+│   ├── squares.py              # Pre-recorded joint angles per square
+│   └── settings.py             # Window and board config
+│
+functions.py            # General-purpose utilities
+│
+└── README.md
+```
 
-# detect_move.py
-Opens camera, overlays chess grid, lets user click squares to move the robot there.
+---
 
-# functions.py
-Core robot movement and gripper control utilities, including home positioning and pick-and-place logic.
+## 🧪 How Calibration Works
 
-# requirements.txt
-Lists Python dependencies:
+- Each square (e.g. `'a2'`) is associated with joint angles in `config/squares.py`
+- Initial angles were obtained by manually moving the arm and reading its position
+- Refinement was done using keyboard-based fine-tuning
+- Lower squares near the base (`a1`, `b2`, etc.) required longer delay due to higher torque and reorientation instability
+- Calibration references:
+  - Rojas Úrzulo et al. (2023)
+  - Realman SDK Docs (2025)
+  - Song et al. (2025)
 
-- Copy
-- Edit
-- opencv-python
-- python-chess
-- pymycobot
+---
 
-# ✅ config/ Folder
-settings.py
-Stores global settings like COM port, speed, camera index.
+## 🚀 Getting Started
 
-## squares.py
-Python dictionary mapping chess squares (e.g. 'e4') to robot coordinates [X, Y, Z, Rx, Ry, Rz]. User-editable for calibration.
+1. Clone the repository  
+2. Install dependencies  
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Connect the MyCobot 320 over USB (default: `COM8`)  
+4. Run the GUI  
+   ```bash
+   python app.py
+   ```
+5. Choose the the desired mode
 
-✅ Purpose: Central place for configuration and calibration data.
+---
 
-# ✅ robot/ Folder
-## arm_control.py  
-Low-level robot API to:
+## 🧑‍💻 Keyboard Controls
 
-Move joints
+| Key | Action             |
+|-----|--------------------|
+| z/x | Joint 1 +/-        |
+| c/v | Joint 2 +/-        |
+| q/a | Joint 3 +/-        |
+| w/s | Joint 4 +/-        |
+| e/d | Joint 5 +/-        |
+| r/f | Joint 6 +/-        |
+| o   | Toggle gripper     |
+| h   | Return to home     |
+| p   | Print coords       |
+| ESC | Exit control       |
 
-Open/close gripper
+---
 
-Return to home position
+## Play with Robot
+"Playing with robot" functionality does not have chess logic implemented. It is completely the player's responsibility to insure game logic and rules are followed.
 
-Provide keyboard control with camera view
+## Edit coords
+This functionality was added to give users more flexibility and choice in their experience. In case the standard chess board was changed or some angles needed adjustments then the user can use this functionality for their benefit.
+### How to use
+1. Either use the keyboard control or a self-written program to move the robot.
+2. Use the keyboard function to print both the angles and coords (by clicking the P key). 
+3. Copy the angles list and paste into the desired square in the library using the edit_coords functionality.
+4. Click on the "save" button to save changes.
 
-## __init__.py
-Makes this folder an importable package.
+## 🧠 Acknowledgments
 
-✅ Purpose: Encapsulates all MyCobot hardware communication.
-
-# ✅ vision/ Folder
-camera_grid.py
-Opens live camera feed with an overlaid chess grid. Lets user click on squares to send robot to those positions.
-
-## __init__.py
-Makes this folder an importable package.
-
-✅ Purpose: Contains all camera-related utilities.
-
-# ✅ 🔗 How It All Fits Together
-## app.py is the entry point. It:
-
-Shows a GUI with multiple buttons.
-
-Calls functions in robot/arm_control.py for movement and gripper control.
-
-Calls vision/camera_grid.py to show the camera feed with chess grid overlay.
-
-Reads/writes chess-square coordinates in config/squares.py.
-
-detect_move.py is a standalone test:
-
-Runs the camera + grid overlay.
-
-Lets the user click a square to move the robot there.
-
-## functions.py:
-
-Provides reusable movement helpers.
-
-Used in both the app and other scripts.
-
-# ✅ 🔧 How to Install & Run
-## 1️⃣ Install dependencies  
-pip install -r requirements.txt
-## 2️⃣ Launch the GUI
-python app.py
-
-
-✅ You’ll see options for:
-
-### Keyboard Control
-
-### Play with the Robot
-
-### Play Against the Robot
-
-### Edit Square Coordinates
-
-## ✅ 🎛️ Editing Square Coordinates
-✔️ Click "Edit Square Coordinates" in the app:
-
-Opens a window listing all squares (like e4).
-
-Lets you edit their X, Y, Z, Rx, Ry, Rz values.
-
-Saves them back to config/squares.py.
-
-✅ Perfect for calibration with your physical chess board.
-
-✅ ⚙️ Example of Keyboard Control
-✔️ In the Keyboard Control window:
-
-z / x → Joint 1
-
-c / v → Joint 2
-
-q / a → Joint 3
-
-w / s → Joint 4
-
-e / d → Joint 5
-
-r / f → Joint 6
-
-o → Toggle gripper
-
-h → Return home
-
-p → Print coordinates
-
-ESC → Exit
-
-✅ Includes live camera feed with grid overlay for visual feedback.
-
-✅ 📌 Design Philosophy
-Separation of concerns:
-
-### config/: All settings and calibration data.
-
-### robot/: All robot-specific movement logic.
-
-### vision/: Camera-based grid interaction.
-
-Top-level scripts to launch GUIs and demos.
-
-User friendly:
-
-GUI to choose modes.
-
-Built-in coordinate editor.
-
-Visual grid overlay for move planning.
-
-# ✅ 🚀 Author
-Built by **ABD DAHAR MAHMOUD LEGHLIMI**
-For research and development using MyCobot 320.
+This work was completed as part of a hands-on robotics research internship with guidance and resources provided by the Bechtel Innovation Design Center at Purdue University under supervision of Dr Paul McPherson.
