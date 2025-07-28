@@ -82,6 +82,11 @@ def play_against_robot_chess(mc, robot_color='black', skill_level=10):
         to_square = chess.square_name(move.to_square)
         print("Stockfish plays:", move)
 
+        promotion = move.promotion  # This will be a chess.PieceType or None
+        if promotion:
+            print(f"Stockfish promotes pawn to: {chess.piece_name(promotion)}")
+            # Optional: Add logic to swap physical pawn with a queen
+
         # Get angles from your config
         from_angles = angle_map[from_square]
         to_angles = angle_map[to_square]

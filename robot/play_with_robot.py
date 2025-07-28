@@ -39,7 +39,7 @@ def play_with_robot_click(mc, tk):
         if '1' in square or '2' in square:
             time.sleep(4)
         else:
-            time.sleep(7)
+            time.sleep(8)
 
     def pick_and_place_piece(source_square, source_angles, dest_square, dest_angles):
         print("🔄 Returning to home before pick...")
