@@ -6,14 +6,14 @@ from robot.arm_control import pick_and_place_piece
 STOCKFISH_PATH = r"C:\Users\leghlimia\Purdue Cobot\Purdue-Cobot\.venv\Lib\site-packages\stockfish\stockfish-windows-x86-64-avx2.exe"
 def difficulty(tk, mc):
     def on_select_difficulty(level):
-        skill_levels = {
+        depth_levels = {
             "Easy": 1,
-            "Medium": 10,
-            "Hard": 20
+            "Medium": 5,
+            "Hard": 12
         }
-        skill = skill_levels[level]
+        depth = depth_levels[level]
         window.destroy()
-        play_against_robot_chess(mc, skill_level=skill)
+        play_against_robot_chess(mc, depth=depth)
 
     window = tk.Tk()
     window.title("Choose Chess Difficulty")
@@ -47,11 +47,10 @@ def rename_squares_for_black(square_angles):
 
     return renamed
 
-def play_against_robot_chess(mc, robot_color='black', skill_level=10):
+def play_against_robot_chess(mc, robot_color='black', depth=4):
     board = chess.Board()
     engine = chess.engine.SimpleEngine.popen_uci(STOCKFISH_PATH)
 
-    engine.configure({"Skill Level": skill_level})
 
     if robot_color.lower() == "black":
         angle_map = rename_squares_for_black(square_angles)
@@ -76,7 +75,7 @@ def play_against_robot_chess(mc, robot_color='black', skill_level=10):
             break
 
         # Stockfish responds
-        result = engine.play(board, chess.engine.Limit(time=0.1))
+        result = engine.play(board, chess.engine.Limit(depth=depth))
         move = result.move
         from_square = chess.square_name(move.from_square)
         to_square = chess.square_name(move.to_square)
@@ -99,3 +98,4 @@ def play_against_robot_chess(mc, robot_color='black', skill_level=10):
 
     print("\nGame over. Result:", board.result())
     engine.quit()
+    return board.result()
