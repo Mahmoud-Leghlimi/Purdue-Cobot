@@ -95,7 +95,7 @@ def keyboard_control(mc, step=3):
 def move_robot_to(mc, square, angles, speed=50):
     print(f"Moving to {square} with angles {angles}")
     mc.send_angles(angles, speed)
-    time.sleep(2)
+    time.sleep(4)
 
 def move_joint(mc, joint_index, delta):
     current_angles = mc.get_angles()  # 🟢 Always get live values
@@ -194,7 +194,7 @@ def pick_and_place_piece(mc, from_square, from_angles, to_square, to_angles):
 
     # Step 2: Open Gripper
     mc.set_gripper_value(15, 50)  # open gripper
-    time.sleep(4)
+    time.sleep(6)
 
     # Step 3: Move to Pick Location
     print(f"🤖 Moving to pick: {from_angles}")
@@ -202,7 +202,7 @@ def pick_and_place_piece(mc, from_square, from_angles, to_square, to_angles):
 
     # Step 4: Close Gripper (Pick)
     mc.set_gripper_value(0, 50)  # close gripper
-    time.sleep(4)
+    time.sleep(6)
 
     # Step 5: Return Home
     move_to_home(mc)

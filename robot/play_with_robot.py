@@ -37,9 +37,9 @@ def play_with_robot_click(mc, tk):
 
         # Conditional wait time
         if '1' in square or '2' in square:
-            time.sleep(4)
-        else:
             time.sleep(8)
+        else:
+            time.sleep(5)
 
     def pick_and_place_piece(source_square, source_angles, dest_square, dest_angles):
         print("🔄 Returning to home before pick...")
@@ -47,13 +47,13 @@ def play_with_robot_click(mc, tk):
         time.sleep(1)
 
         mc.set_gripper_value(15, 50)  # open gripper
-        time.sleep(4)
+        time.sleep(5)
 
         print(f"🤖 Moving to pick: {source_angles}")
         move_robot_to(source_square, source_angles)
 
         mc.set_gripper_value(0, 50)  # close gripper
-        time.sleep(4)
+        time.sleep(6)
 
         move_to_home(mc)
         print("✅ Piece picked and returned home.")
