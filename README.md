@@ -113,15 +113,15 @@ functions.py            # General-purpose utilities
 In the "Play Against Robot" mode, the user plays their own move and inputs it using the syntax e2e4 (indicating the piece movement from e2 to e4), after which the robot physically makes the move. Then, the robot plays its own move, and the cycle continues, alternating between the user and the robot.
 
 ### How it Works:
-**User's Move:** The user manually plays their move on the chessboard. The move must be entered in standard algebraic notation, such as e2e4, where the first two characters represent the source square, and the last two characters represent the destination square.
+**1. User's Move:** The user manually plays their move on the chessboard. The move must be entered in standard algebraic notation, such as e2e4, where the first two characters represent the source square, and the last two characters represent the destination square.
 
-**Input Syntax:** The user inputs their move using the format source_square + destination_square, e.g., e2e4 for moving a piece from e2 to e4.
+**2. Input Syntax:** The user inputs their move using the format source_square + destination_square, e.g., e2e4 for moving a piece from e2 to e4.
 
-**Robot Executes User's Move:** Once the move is inputted, the robot will physically move the piece on the chessboard according to the user's specified move.
+**3. Robot Executes User's Move:** Once the move is inputted, the robot will physically move the piece on the chessboard according to the user's specified move.
 
-**AI Move (Stockfish):** After executing the user's move, Stockfish, the AI engine, generates the next move for the robot. The robot will then execute its move on the chessboard in the same manner.
+**4. AI Move (Stockfish):** After executing the user's move, Stockfish, the AI engine, generates the next move for the robot. The robot will then execute its move on the chessboard in the same manner.
 
-**Game Continues:** The cycle alternates between the user and the robot, with each player making one move at a time. The robot's moves are executed physically on the board, and the game progresses until it ends.
+**5. Game Continues:** The cycle alternates between the user and the robot, with each player making one move at a time. The robot's moves are executed physically on the board, and the game progresses until it ends.
 
 ## Edit coords
 This functionality was added to give users more flexibility and choice in their experience. In case the standard chess board was changed or some angles needed adjustments then the user can use this functionality for their benefit.
